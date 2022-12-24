@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: 103 97 168;
+  --color-contrast: 255 255 255;
+  --color-success: 0 155 118;
+  --color-danger: 169 77 74;
+  --color-warning: 255 197 102;
+  --font-size-heading: 2rem;
+  --font-size-subheading: 1.5rem;
+  --font-size-label: 1.25rem;
+  --font-size-lead: 1.125rem;
+  --font-size-copy: 1rem;
+  --font-size-fine: 0.75rem;
+}
