@@ -1,53 +1,77 @@
-// import { items } from "$lib/stores";
+import { z } from "zod";
 
-const items = [{
-  id: '1',
-  inventory_id: '1',
-  name: 'first item'
-}]
+const itemSchema = z.object({
+  barcode: z
+    .string({ required_error: "Barcode is required" })
+    .min(3, "Invalid barcode")
+    .trim(),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(64, "Name must be less than 64 characters")
+    .trim(),
+  expiry_date: z.preprocess((arg) => {
+    if (typeof arg == "string" && arg.length === 0) return;
+    if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+  }, z.date({ required_error: "Expiry date is required" })),
+  image: z.any().refine((blob) => blob?.size > 0, "Image is required"),
+  inventory: z.string().min(1, "Inventory is required"),
+});
+
+const items = [
+  {
+    id: "1",
+    inventory_id: "1",
+    name: "first item",
+  },
+];
 
 /** @type {import('./$types').PageLoad} */
-export const load = ({ params }) => {
+export const load = async ({ params }) => {
   // fetch available inventories
   const inventories = [
     {
-      id: '1',
-      name: 'First Inv',
-      value: 'First Inv',
+      id: "1",
+      name: "First Inv",
+      value: "First Inv",
     },
     {
-      id: '2',
-      name: 'Second Inv',
-      value: 'Second Inv',
-    }
-  ]
+      id: "2",
+      name: "Second Inv",
+      value: "Second Inv",
+    },
+  ];
+
   return {
     id: params.id,
     inventories,
     items,
   };
-}
+};
 
 /** @type {import('./$types').Actions} */
 export const actions = {
   default: async ({ request }) => {
     const formData = await request.formData();
+    const item = Object.fromEntries(formData);
+    console.log(item);
+    // return
+    try {
+      const result = itemSchema.parse(item);
+      console.log("success");
+      console.log(result);
 
-    const barcode = formData.get('barcode');
-    const name = formData.get('name');
-    const expiry_date = formData.get('expiry_date');
-    const image = formData.get('image');
-    const inventory = formData.get('inventory');
+      // // @ts-ignore
+      // items.push(item);
+    } catch (err) {
+      // @ts-ignore
+      const { fieldErrors: errors } = err.flatten();
+      const { image, ...rest } = item;
 
-    const item = {
-      barcode,
-      name,
-      expiry_date,
-      image,
-      inventory,
-    };
-
-    // items.update(i => [...i, item]);
-    items.push(item);
-  }
+      return {
+        data: rest,
+        errors
+      };
+    }
+  },
 };

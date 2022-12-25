@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { item } from "$lib/stores";
+  /* import { item } from "$lib/stores"; */
   import { Heading, Button } from "$lib/components";
   import Pencil from 'svelte-material-icons/Pencil.svelte';
 
@@ -8,11 +8,11 @@
   let name = '';
   let inventory_id = '';
 
-  onMount(() => {
-    id = $item.id;
-    name = $item.name;
-    inventory_id = $item.inventory_id;
-  })
+  /* onMount(() => { */
+  /*   id = $item.id; */
+  /*   name = $item.name; */
+  /*   inventory_id = $item.inventory_id; */
+  /* }) */
 
 </script>
 

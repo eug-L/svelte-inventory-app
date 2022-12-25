@@ -5,16 +5,27 @@
   import { Button, Input, Select } from "$lib/components";
   import { header } from "$lib/stores";
 
-  /* $: console.log($items); */
-
   /** @type {import('./$types').PageData} */
   export let data;
+  export let form;
+  console.log(form);
 
-  let name = '';
-  let inventory_id = '';
-  let expiry_date = '';
   let barcode = '';
+  let name = '';
+  let expiry_date = '';
+  let inventory = '';
   let scanner = undefined;
+
+  $: restoreForm(form);
+
+  function restoreForm(form) {
+    if (form?.data) {
+      barcode = form?.data.barcode ?? '';
+      name = form?.data.name ?? '';
+      expiry_date = form?.data.expiry_date ?? '';
+      inventory = form?.data.inventory ?? '';
+    }
+  }
 
   function onScanSuccess(decodedText, decodedResult) {
     // handle the scanned code as you like, for example:
@@ -44,9 +55,6 @@
   }
 
   onMount(() => {
-    if (data.id) {
-      inventory_id = data.id
-    }
     header.update(() => "New Item");
   });
 
@@ -65,7 +73,7 @@
   }
 </script>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
   <div>
     {#each data.items as item}
       <p>{item.name}</p>
@@ -74,9 +82,7 @@
   <div class="my-6 grid gap-6">
     {#if !scanner}
       <label for="barcode" class="text-label text-primary font-semibold">Barcode</label>
-      {#if barcode !== ''}
-        <Input readonly={true} name="barcode" bind:value={barcode} />
-      {/if}
+      <Input readonly={true} name="barcode" bind:value={barcode} error={form?.errors?.barcode} />
       <Button on:click={startScanner}>
         {#if barcode !== ''}
           Scan Again
@@ -85,14 +91,14 @@
         {/if}
       </Button>
 
-      <Input label="Name" name="name" bind:value={name} />
+      <Input label="Name" name="name" bind:value={name} error={form?.errors?.name} />
 
-      <Input label="Expiry date" name="expiry_date" bind:value={expiry_date} type="date" />
+      <Input label="Expiry date" name="expiry_date" bind:value={expiry_date} type="date" error={form?.errors?.expiry_date} />
 
-      <Input label="Image" name="image" type="file" accept="image/*" capture="environment" />
+      <Input label="Image" name="image" type="file" accept="image/*" capture="environment" error={form?.errors?.image} />
 
       {#if data.inventories?.length > 0}
-        <Select label="Inventory" name="inventory" options={data.inventories} />
+        <Select label="Inventory" name="inventory" bind:value={inventory} options={data.inventories} error={form?.errors?.inventory} />
       {/if}
 
       <div class="flex justify-end gap-2">
