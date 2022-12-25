@@ -5,6 +5,8 @@
   import { Button, Input, Select } from "$lib/components";
   import { header } from "$lib/stores";
 
+  /* $: console.log($items); */
+
   /** @type {import('./$types').PageData} */
   export let data;
 
@@ -64,6 +66,11 @@
 </script>
 
 <form method="POST">
+  <div>
+    {#each data.items as item}
+      <p>{item.name}</p>
+    {/each}
+  </div>
   <div class="my-6 grid gap-6">
     {#if !scanner}
       <label for="barcode" class="text-label text-primary font-semibold">Barcode</label>
