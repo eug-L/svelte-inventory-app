@@ -1,5 +1,5 @@
 /** @type {import('./$types').PageLoad} */
-export function load({ params }) {
+export const load = ({ params }) => {
   // fetch available inventories
   const inventories = [
     {
@@ -18,10 +18,3 @@ export function load({ params }) {
     inventories,
   };
 }
-
-/** @type {import('./$types').Actions} */
-export const actions = {
-  default: async (event) => {
-    console.log(event);
-  }
-};
