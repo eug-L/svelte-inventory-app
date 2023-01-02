@@ -1,8 +1,9 @@
 import PocketBase from 'pocketbase';
+import {LOCAL_PB_IP} from '$env/static/private';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export const handle = async ({ event, resolve }) => {
-	event.locals.pb = new PocketBase('http://127.0.0.1:8090');
+	event.locals.pb = new PocketBase(LOCAL_PB_IP);
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	// if (event.locals.pb.authStore.isValid) {

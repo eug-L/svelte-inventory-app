@@ -32,7 +32,6 @@ export const load = async ({ locals }) => {
   });
 
   items = items.map(item => {
-    console.log(item)
     return {
       ...item,
       image: item.image ? getFileUrl(item.collectionId, item.id, item.image) : ''
@@ -51,6 +50,7 @@ export const actions = {
     const formData = await request.formData();
     const item = Object.fromEntries(formData);
     let { image, ...rest } = item;
+    console.log(image);
 
     try {
       itemSchema.parse(item);

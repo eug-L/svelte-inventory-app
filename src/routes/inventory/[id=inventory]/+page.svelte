@@ -4,6 +4,7 @@
   import Plus from 'svelte-material-icons/Plus.svelte';
   import ViewList from 'svelte-material-icons/ViewList.svelte';
   import ViewGrid from 'svelte-material-icons/ViewGrid.svelte';
+  import { base } from '$app/paths';
 
   import { header } from "$lib/stores";
   import { Button, Card, Text } from "$lib/components";
@@ -16,11 +17,11 @@
 
 <div class="grid gap-4 pt-2">
   <div class="flex justify-between">
-    <Button as="a" href="/">
+    <Button as="a" href="{base}/">
       Back
     </Button>
     <div class="flex gap-2">
-      <Button as="a" href="/inventory/{data.id}/edit" class="pl-5">
+      <Button as="a" href="{base}/inventory/{data.id}/edit" class="pl-5">
         Edit Inventory
         <Pencil />
       </Button>
@@ -45,7 +46,7 @@
     </div>
     <div class="flex flex-wrap gap-4">
       {#each data.inventoryItems as item}
-        <Card as="a" href="/items/{item.id}" title="{item.name}" hasImage={true} image={item.image} />
+        <Card as="a" href="{base}/items/{item.id}" title="{item.name}" hasImage={true} image={item.image} />
       {/each}
     </div>
   {/if}

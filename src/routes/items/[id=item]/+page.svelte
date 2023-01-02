@@ -15,7 +15,7 @@
   <Button on:click={() => window.history.back()} class="flex items-center px-3 gap-1">
     Back
   </Button>
-  <Button as="a" href="/items/{data.item?.id}/edit" class="flex items-center pl-3 gap-1">
+  <Button as="a" href="{base}/items/{data.item?.id}/edit" class="flex items-center pl-3 gap-1">
     Edit Item
     <Pencil />
   </Button>
