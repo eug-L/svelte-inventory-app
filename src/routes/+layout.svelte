@@ -4,7 +4,7 @@
 </script>
 
 <Header />
-<div class="container mx-auto px-4 lg:px-8">
+<div class="container mx-auto px-4">
   <slot />
 </div>
 

@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import { customAlphabet } from "nanoid";
   import { goto } from "$app/navigation";
 
@@ -10,9 +9,7 @@
 
   let name = '';
 
-  onMount(() => {
-    header.update(() => "New Inventory");
-  });
+  header.set("New Inventory");
 
   const handleSubmit = () => {
     const newInventory = {

@@ -1,46 +1,43 @@
 <script>
-  import { onMount } from "svelte";
-  import {Html5QrcodeScanner} from "html5-qrcode"
+  import {Html5QrcodeScanner} from "html5-qrcode";
+  import { enhance, applyAction } from '$app/forms';
+  import toast, { Toaster } from 'svelte-french-toast';
 
   import { Button, Input, Select } from "$lib/components";
   import { header } from "$lib/stores";
 
+  header.set("New Item");
+
   /** @type {import('./$types').PageData} */
   export let data;
   export let form;
-  console.log(form);
 
   let barcode = '';
-  let name = '';
-  let expiry_date = '';
-  let inventory = '';
   let scanner = undefined;
+  let image = '';
+  let fileInput;
 
-  $: restoreForm(form);
+  $: formUpdate(form);
 
-  function restoreForm(form) {
-    if (form?.data) {
-      barcode = form?.data.barcode ?? '';
-      name = form?.data.name ?? '';
-      expiry_date = form?.data.expiry_date ?? '';
-      inventory = form?.data.inventory ?? '';
+  function formUpdate(form) {
+    if (form?.errors?.server) {
+      toast.error(form.errors.server)
     }
+
+    barcode = form?.data?.barcode ?? '';
   }
 
-  function onScanSuccess(decodedText, decodedResult) {
-    // handle the scanned code as you like, for example:
-    console.log(`Code matched = ${decodedText}`, decodedResult);
+  function onScanSuccess(decodedText) {
     barcode = decodedText;
+
     if (scanner) {
-      scanner.clear();
-      scanner = undefined;
+      clearScanner();
     }
   }
 
-  function onScanFailure(error) {
-    // handle scan failure, usually better to ignore and keep scanning.
-    // for example:
-    console.warn(`Code scan error = ${error}`);
+  function clearScanner() {
+    scanner.clear();
+    scanner = undefined;
   }
 
   // Square QR box with edge size = 70% of the smaller edge of the viewfinder.
@@ -54,10 +51,6 @@
     };
   }
 
-  onMount(() => {
-    header.update(() => "New Item");
-  });
-
   const startScanner = () => {
     let html5QrcodeScanner = new Html5QrcodeScanner(
       "reader",
@@ -68,45 +61,73 @@
         showTorchButtonIfSupported: true
       },
       /* verbose= */ false);
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    html5QrcodeScanner.render(onScanSuccess);
     scanner = html5QrcodeScanner;
+  }
+
+  const focusBarcodeInput = () => {
+    startScanner();
+  }
+
+  const handleFileInput = (e) => {
+    image = URL.createObjectURL(e.detail);
   }
 </script>
 
-<form method="POST" enctype="multipart/form-data">
-  <div>
-    {#each data.items as item}
-      <p>{item.name}</p>
-    {/each}
-  </div>
-  <div class="my-6 grid gap-6">
-    {#if !scanner}
-      <label for="barcode" class="text-label text-primary font-semibold">Barcode</label>
-      <Input readonly={true} name="barcode" bind:value={barcode} error={form?.errors?.barcode} />
-      <Button on:click={startScanner}>
-        {#if barcode !== ''}
-          Scan Again
-        {:else}
-          Scan
-        {/if}
-      </Button>
-
-      <Input label="Name" name="name" bind:value={name} error={form?.errors?.name} />
-
-      <Input label="Expiry date" name="expiry_date" bind:value={expiry_date} type="date" error={form?.errors?.expiry_date} />
-
-      <Input label="Image" name="image" type="file" accept="image/*" capture="environment" error={form?.errors?.image} />
-
-      {#if data.inventories?.length > 0}
-        <Select label="Inventory" name="inventory" bind:value={inventory} options={data.inventories} error={form?.errors?.inventory} />
+<form method="POST" action="/items?/create" enctype="multipart/form-data" use:enhance={({ form }) => {
+  return async ({ result, update }) => {
+    if (result.type === 'success') {
+      window.history.back();
+    }
+    if (result.type === 'failure') {
+      await applyAction(result);
+    }
+    update();
+  };
+}}>
+  <div class="my-6 grid gap-6 {scanner && 'hidden'}">
+    <label for="barcode" class="text-label text-primary font-semibold">Barcode</label>
+    <Input readonly={true} name="barcode" value={barcode ?? ''} error={form?.errors?.barcode} on:focus-input={focusBarcodeInput} />
+    <Button on:click={startScanner}>
+      {#if barcode !== ''}
+        Scan Again
+      {:else}
+        Scan
       {/if}
+    </Button>
 
-      <div class="flex justify-end gap-2">
-        <Button on:click={() => window.history.back()} variant="secondary">Cancel</Button>
-        <Button type="submit">Create</Button>
+    <Input label="Name" name="name" value={form?.data?.name ?? ''} error={form?.errors?.name} />
+
+    <Input label="Expiry date" name="expiry_date" value={form?.data?.expiry_date ?? ''} type="date" error={form?.errors?.expiry_date} />
+
+    <Input label="Image" name="image" type="file" accept="image/*" capture="environment" error={form?.errors?.image} class="{image && 'hidden'}" bind:node={fileInput} on:change-input={handleFileInput} />
+    {#if image !== ''}
+      <div class="flex items-center gap-2">
+        <label for="#" class="text-label text-primary font-semibold">Image</label>
+        <Button size="sm" on:click={() => fileInput.click()}>Change</Button>
+      </div>
+      <div class="flex justify-center sm:justify-start">
+        <img src={image} alt="#" class="h-64"/>
       </div>
     {/if}
 
-    <div id="reader" width="600px"></div>
+    <!-- {#if data.inventories?.length > 0} -->
+    <!--   <Select label="Inventory" name="inventory" value={form?.data?.inventory ?? ''} options={data.inventories} error={form?.errors?.inventory} /> -->
+    <!-- {/if} -->
+
+    <Input label="Quantity" name="quantity" type="number" min="0" value={form?.data?.quantity ?? ''} error={form?.errors?.quantity} />
+
+    <div class="flex justify-end gap-2">
+      <Button on:click={() => window.history.back()} variant="ghost">Cancel</Button>
+      <Button type="submit">Create</Button>
+    </div>
   </div>
+
+  <div id="reader" width="600px"></div>
+  <Button on:click={clearScanner} class="w-full {!scanner && 'hidden'}">
+    Cancel
+  </Button>
+
+  <Toaster />
+
 </form>

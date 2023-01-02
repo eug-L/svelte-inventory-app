@@ -39,7 +39,7 @@
   <div class="my-6 grid gap-6">
     <Input label="Name" name="name" bind:value={name} />
     <div class="flex justify-end gap-2">
-      <Button on:click={() => window.history.back()} variant="secondary">Cancel</Button>
+      <Button on:click={() => window.history.back()} variant="ghost">Cancel</Button>
       <Button type="submit">Submit</Button>
     </div>
   </div>
