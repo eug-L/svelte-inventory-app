@@ -2,7 +2,7 @@ import { z } from "zod";
 import { fail } from '@sveltejs/kit';
 import { inventories } from '$lib/server/data';
 import crypto from 'crypto';
-import { serializeNonPOJOs } from '$lib/utils';
+import { serializeNonPOJOs, getFileUrl } from '$lib/utils';
 
 const coerceNumber = z.coerce.number();
 
@@ -32,10 +32,10 @@ export const load = async ({ locals }) => {
   });
 
   items = items.map(item => {
-  console.log(pb.getFileUrl(item, item.image));
+    console.log(item)
     return {
       ...item,
-      image: item.image ? pb.getFileUrl(item, item.image) : ''
+      image: item.image ? getFileUrl(item.collectionId, item.id, item.image) : ''
     }
   })
 

@@ -1,5 +1,5 @@
 import { items } from '$lib/server/data';
-import { serializeNonPOJOs } from '$lib/utils';
+import { serializeNonPOJOs, getFileUrl } from '$lib/utils';
 
 /** @type {import('./$types').PageLoad} */
 export const load = async ({ locals, params }) => {
@@ -11,7 +11,7 @@ export const load = async ({ locals, params }) => {
   item = serializeNonPOJOs(item);
 
   if (item.image) {
-    const url = pb.getFileUrl(item, item.image)
+    const url = getFileUrl(item.collectionId, item.id, item.image);
     item = {
       ...item,
       image: url,
