@@ -3,6 +3,7 @@
   import {Html5QrcodeScanner} from "html5-qrcode";
   import { enhance, applyAction } from '$app/forms';
   import dayjs from 'dayjs';
+  import { base } from '$app/paths';
 
   import { Button, Input, Select } from "$lib/components";
   import { header } from "$lib/stores";
@@ -85,7 +86,7 @@
 
 </script>
 
-<form method="POST" action="/items?/update" enctype="multipart/form-data" use:enhance={({ form }) => {
+<form method="POST" action="{base}/items?/update" enctype="multipart/form-data" use:enhance={({ form }) => {
   return async ({ result, update }) => {
     if (result.type === 'success') {
       window.history.back();

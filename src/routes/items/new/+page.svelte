@@ -2,6 +2,7 @@
   import {Html5QrcodeScanner} from "html5-qrcode";
   import { enhance, applyAction } from '$app/forms';
   import toast, { Toaster } from 'svelte-french-toast';
+  import { base } from '$app/paths';
 
   import { Button, Input, Select } from "$lib/components";
   import { header } from "$lib/stores";
@@ -74,7 +75,7 @@
   }
 </script>
 
-<form method="POST" action="/items?/create" enctype="multipart/form-data" use:enhance={({ form }) => {
+<form method="POST" action="{base}/items?/create" enctype="multipart/form-data" use:enhance={({ form }) => {
   return async ({ result, update }) => {
     if (result.type === 'success') {
       window.history.back();

@@ -2,6 +2,7 @@
   import { Heading, Button, Text } from "$lib/components";
   import Pencil from 'svelte-material-icons/Pencil.svelte';
   import { header } from "$lib/stores";
+  import { base } from '$app/paths';
 
   /** @type {import('./$types').PageData} */
   export let data;
@@ -44,7 +45,7 @@
     <h3 class="text-lg font-bold">Confirm delete {data.item?.name}?</h3>
     <div class="modal-action">
       <label for="confirm-delete" class="btn btn-ghost">No</label>
-      <form bind:this={deleteForm} method="POST" action="/items?/delete" >
+      <form bind:this={deleteForm} method="POST" action="{base}/items?/delete" >
         <input type="hidden" name="id" value={data.item?.id ?? ''} />
         <label for="confirm-delete" class="btn btn-primary" on:click={() => deleteForm.submit()} on:keydown>Yes</label>
       </form>
