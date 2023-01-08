@@ -2,7 +2,7 @@ import { z } from "zod";
 import { fail } from '@sveltejs/kit';
 import { inventories } from '$lib/server/data';
 import crypto from 'crypto';
-import { serializeNonPOJOs, getFileUrl } from '$lib/utils';
+import { getFileUrl } from '$lib/utils';
 
 const coerceNumber = z.coerce.number();
 

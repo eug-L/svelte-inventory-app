@@ -1,7 +1,7 @@
 <script>
   import {Html5QrcodeScanner} from "html5-qrcode";
   import { enhance, applyAction } from '$app/forms';
-  import toast, { Toaster } from 'svelte-french-toast';
+  import toast from 'svelte-french-toast';
   import { base } from '$app/paths';
 
   import { Button, Input, Select } from "$lib/components";
@@ -66,16 +66,12 @@
     scanner = html5QrcodeScanner;
   }
 
-  const focusBarcodeInput = () => {
-    startScanner();
-  }
-
   const handleFileInput = (e) => {
     image = URL.createObjectURL(e.detail);
   }
 </script>
 
-<form method="POST" action="{base}/items?/create" enctype="multipart/form-data" use:enhance={({ form }) => {
+<form method="POST" action="{base}/items?/create" enctype="multipart/form-data" use:enhance={() => {
   return async ({ result, update }) => {
     if (result.type === 'success') {
       window.history.back();
@@ -88,7 +84,6 @@
 }}>
   <div class="my-6 grid gap-6 {scanner && 'hidden'}">
     <label for="barcode" class="text-label text-primary font-semibold">Barcode</label>
-    <Input readonly={true} name="barcode" value={barcode ?? ''} error={form?.errors?.barcode} on:focus-input={focusBarcodeInput} />
     <Button on:click={startScanner}>
       {#if barcode !== ''}
         Scan Again
@@ -96,6 +91,7 @@
         Scan
       {/if}
     </Button>
+    <Input name="barcode" value={barcode ?? ''} error={form?.errors?.barcode} />
 
     <Input label="Name" name="name" value={form?.data?.name ?? ''} error={form?.errors?.name} />
 
@@ -128,7 +124,5 @@
   <Button on:click={clearScanner} class="w-full {!scanner && 'hidden'}">
     Cancel
   </Button>
-
-  <Toaster />
 
 </form>
