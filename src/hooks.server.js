@@ -15,16 +15,30 @@ export const handle = async ({ event, resolve }) => {
 		event.locals.user = undefined;
 	}
 
-	if (event.url.pathname.startsWith(`${base}/items`)) {
+	if (isAuthRoute(event.url.pathname)) {
 		if (!event.locals.user) {
-			throw redirect(303, '/');
+			throw redirect(303, base);
 		}
 	}
-
 
 	const response = await resolve(event);
 
 	response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie());
 
 	return response;
+}
+
+const authRoutes = [
+	`${base}/items`,
+	`${base}/profile`,
+];
+
+function isAuthRoute(path) {
+	for (let route of authRoutes) {
+		if (path.startsWith(route)) {
+			return true
+		}
+	}
+
+	return false
 }
