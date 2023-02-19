@@ -50,7 +50,6 @@ export const actions = {
     const formData = await request.formData();
     const item = Object.fromEntries(formData);
     let { image, ...rest } = item;
-    console.log(image);
 
     try {
       itemSchema.parse(item);

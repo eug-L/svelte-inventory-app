@@ -10,7 +10,6 @@ export const load = ({ locals }) => {
 export const actions = {
   login: async ({ request, locals }) => {
     const body = Object.fromEntries(await request.formData());
-    console.log(body, locals);
 
     try {
       await locals.pb.collection('users').authWithPassword(body.email, body.password);
